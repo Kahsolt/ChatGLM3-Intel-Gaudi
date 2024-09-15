@@ -1,0 +1,18 @@
+# meta
+.vscode/
+__pycache__/
+
+# data
+data/*
+!data/*.cmd
+
+# repo
+repo/*
+!repo/*.cmd
+
+# generated
+out/
+
+# logs
+log/
+*.log
