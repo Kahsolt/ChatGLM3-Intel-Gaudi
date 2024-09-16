@@ -5,7 +5,7 @@
 ----
 
 Contest page: https://www.datafountain.cn/competitions/1041  
-Team Name: ???  
+Team Name: 盛开在时间外  
 
 
 ### Quick start
@@ -46,7 +46,7 @@ python run_inference.py
 - AdvertiseGen数据集
   - from tsinghua source (original): https://cloud.tsinghua.edu.cn/f/b3f119a008264b1cabd1/?dl=1
   - from google drive: https://drive.google.com/file/d/13_vf0xRTQsyneRKdD1bZIr93vBGOczrk/view?usp=sharing
-- 幕僚智算云平台 (出租 Intel Gaudi AI 虚拟机；初赛前30名报销1000算力券，wtf你不发钱就发券???)
+- 幕僚智算云平台 (出租 Intel Gaudi AI 虚拟机；初赛前30名报销1000算力券)
   - site: https://www.muliao.com
   - doc: https://www.muliao.com/document/start
 - Intel Gaudi 硬件

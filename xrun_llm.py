@@ -2,7 +2,7 @@
 # Author: Armit
 # Create Time: 2024/09/15 
 
-# 交互式脚本: ChatGLM3-6B 推理
+# 交互式脚本: ChatGLM3-6B 推理；该脚本需要在另一个有 pytorch-gpu 的环境下运行，而非 gaudi 开发环境!!
 # - outputs ~20 tok/s on RTX 3060
 
 from time import time
