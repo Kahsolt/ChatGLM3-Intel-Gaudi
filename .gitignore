@@ -10,9 +10,7 @@ data/*
 repo/*
 !repo/*.cmd
 
-# generated
-out/
-
 # logs
+out/
 log/
 *.log
