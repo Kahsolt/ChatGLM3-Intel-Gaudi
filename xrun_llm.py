@@ -3,7 +3,9 @@
 # Create Time: 2024/09/15 
 
 # 交互式脚本: ChatGLM3-6B 推理；该脚本需要在另一个有 pytorch-gpu 的环境下运行，而非 gaudi 开发环境!!
-# - outputs ~20 tok/s on RTX 3060
+# - outputs on RTX 3060: ~20 tok/s for int4, ~5 tok/s for int8 
+
+import warnings ; warnings.filterwarnings(action='ignore', category=UserWarning)
 
 from time import time
 
@@ -32,6 +34,56 @@ tokenizer: 'ChatGLMTokenizer' = AutoTokenizer.from_pretrained(
   model_path,
   trust_remote_code=True,
 )
+
+if 'show param_cnt':
+  # 这个要以 dtype=bfloat16/int8 计, 用 int4 算会少一半
+  n_layers = len(model.transformer.encoder.layers)
+  layer0   = model.transformer.encoder.layers[0]
+  attn_qkv = layer0.self_attention.query_key_value
+  attn_o   = layer0.self_attention.dense 
+  ffw_down = layer0.mlp.dense_h_to_4h
+  ffw_up   = layer0.mlp.dense_4h_to_h
+  r = 16
+  pcnt_full = sum([p.numel() for p in model.parameters()])
+  # LoRA: h = W_0 @ x + B @ A @ x
+  pcnt_lora_qkv      = attn_qkv.in_features * r + r * attn_qkv.out_features
+  pcnt_lora_o        = attn_o.in_features * r + r * attn_o.out_features
+  pcnt_lora_ffw      = (ffw_down.in_features * r + r * ffw_down.out_features) + (ffw_up.in_features * r + r * ffw_up.out_features)
+  pcnt_lora_qkv_sum  = n_layers * pcnt_lora_qkv
+  pcnt_lora_qkvo_sum = n_layers * (pcnt_lora_qkv + pcnt_lora_o)
+  pcnt_lora_ffw_sum  = n_layers * pcnt_lora_ffw
+  pcnt_lora_full_sum = pcnt_lora_qkvo_sum + pcnt_lora_ffw_sum
+  # VeRA: h = W_0 @ x + diag(λb) @ B @ diag(λd) @ A @ x
+  pcnt_vera_qkv      = r + attn_qkv.out_features
+  pcnt_vera_o        = r + attn_o.out_features
+  pcnt_vera_ffw      = (r + ffw_down.out_features) + (r + ffw_up.out_features)
+  pcnt_vera_qkv_sum  = n_layers * pcnt_vera_qkv + pcnt_lora_qkv
+  pcnt_vera_qkvo_sum = n_layers * (pcnt_vera_qkv + pcnt_vera_o) + (pcnt_lora_qkv + pcnt_lora_o)
+  pcnt_vera_ffw_sum  = n_layers * pcnt_vera_ffw + pcnt_lora_ffw
+  pcnt_vera_full_sum = pcnt_vera_qkvo_sum + pcnt_vera_ffw_sum
+
+  '''
+  [param_cnt]
+    full:       6243584000
+    lora(qkv):  3899392 (0.06245%)
+    lora(qkvo): 7569408 (0.12123%)
+    lora(ffw):  22077440 (0.35360%)
+    lora(full): 29646848 (0.47484%)
+    vera(qkv):  268736 (0.00430%)
+    vera(qkvo): 514944 (0.00825%)
+    vera(ffw):  1671040 (0.02676%)
+    vera(full): 2185984 (0.03501%)
+  '''
+  print('[param_cnt]')
+  print(f'   full:       {pcnt_full}')
+  print(f'   lora(qkv):  {pcnt_lora_qkv_sum} ({pcnt_lora_qkv_sum / pcnt_full:.5%})')
+  print(f'   lora(qkvo): {pcnt_lora_qkvo_sum} ({pcnt_lora_qkvo_sum / pcnt_full:.5%})')
+  print(f'   lora(ffw):  {pcnt_lora_ffw_sum} ({pcnt_lora_ffw_sum / pcnt_full:.5%})')
+  print(f'   lora(full): {pcnt_lora_full_sum} ({pcnt_lora_full_sum / pcnt_full:.5%})')
+  print(f'   vera(qkv):  {pcnt_vera_qkv_sum} ({pcnt_vera_qkv_sum / pcnt_full:.5%})')
+  print(f'   vera(qkvo): {pcnt_vera_qkvo_sum} ({pcnt_vera_qkvo_sum / pcnt_full:.5%})')
+  print(f'   vera(ffw):  {pcnt_vera_ffw_sum} ({pcnt_vera_ffw_sum / pcnt_full:.5%})')
+  print(f'   vera(full): {pcnt_vera_full_sum} ({pcnt_vera_full_sum / pcnt_full:.5%})')
 
 # 多轮问答，高级API
 #response, history = model.chat(tokenizer, "你好", history=[])

@@ -26,16 +26,16 @@
 - 探索模型 [ChatGLM3-6B](https://huggingface.co/THUDM/chatglm3-6b)
   - 架构图画个简单的ppt
   - 参数量: 全量，LoRA参数量
-  - 默认或推荐 prompt 结构
+  - [默认或推荐 prompt 结构](https://github.com/THUDM/ChatGLM3/blob/main/PROMPT.md)
 - 探索数据集 [AdvertiseGen](https://huggingface.co/datasets/shibing624/AdvertiseGen)
   - 各项统计值：样本数，输入/输出长度，输入+输出总长度（以token计）
   - 合并 train.json 和 dev.json，按输入+输出总长度排序后间隔采样 100 条数据作为 tiny.json
 - 跑通推理流程
   - 推理 tiny 数据集，测定推理速度 (num_tokens/s)
-  - 测定不同精度下的推理速度: float16, int8, int4
+  - 测定不同精度下的推理速度: float16, bfloat16, int8, int4
   - 画三维散点图: (输入+输出长度, 输出长度, 推理耗时)
 - 跑通微调流程
-  - LoRA训练 tiny 数据集，测定训练速度 (num_samples/s)
+  - LoRA / VeRA 训练 tiny 数据集，测定训练速度 (num_samples/s)
   - 使用量化可感知微调
 
 
