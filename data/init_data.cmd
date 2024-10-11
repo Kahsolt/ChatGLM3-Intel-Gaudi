@@ -12,5 +12,3 @@ POPD
 
 ECHO Done!
 ECHO.
-
-PAUSE

@@ -8,11 +8,6 @@
 
 ⚠ 本次比赛**只关心训练/推理速度，不考虑模型任务的评价指标**，不要尝试去优化模型的输出质量，训练和推理都不需要跑完整个数据集！！
 
-⚠ README.md 中的 `⚪ install` 节只记录了最终评测时所用依赖，而开发时我们还需要额外的东西：
-
-- 一个能在本地跑起来 ChatGLM3-6B 推理的虚拟环境: Pytorch(GPU) + transformers
-- 在 repo 目录下执行 `git clone https://github.com/HabanaAI/Model-References`
-
 ```
 主要关心下列代码仓库
 - https://github.com/huggingface/transformers    简称 tfx

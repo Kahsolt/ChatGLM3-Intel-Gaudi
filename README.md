@@ -8,20 +8,34 @@ Contest page: https://www.datafountain.cn/competitions/1041
 Team Name: 盛开在时间外  
 
 
-### Quick start
+### Quickstart
 
 ℹ The following commands run on **Windows**, get your own brain for Linux users ;)
 
-⚪ install
+⚪ install (for run)
 
-⚠ **DO NOT** install Pytorch mannualy, it'll be auto-done when installing the `optimum-habana` repo 😈  
-⚠ **DO NOT** necessary to use Pytorch-GPU version, as we finally compare the preformances on CPU
+⚠ We'll use Pytorch-**CPU** for Gaudi runtime. It'll be auto installed when installing the `optimum-habana` repo, so do not worry! 👼  
 
 ```bat
 conda create -y -n gaudi python==3.11
 conda activate gaudi
+pip install matplotlib tqdm
+pip install git+https://github.com/Kahsolt/optimum-habana.git
+CALL data\init_data.cmd
+```
+
+⚪ install (for dev)
+
+⚠ We'll use Pytorch-**GPU** for local development. Need manual install, see the following commands. 😈  
+
+```bat
+conda create -y -n gaudi python==3.11
+conda activate gaudi
+REM install pytorch (GPU version) following https://pytorch.org/get-started/locally/
+pip install matplotlib tqdm transformers peft
 CALL data\init_data.cmd
 CALL repo\init_repos.cmd
+REM pip install git+https://github.com/HabanaAI/DeepSpeed.git@1.17.0
 ```
 
 ⚪ run finetune
@@ -29,6 +43,7 @@ CALL repo\init_repos.cmd
 This command will finetune ChatGLM3 on [train.json](data\AdvertiseGen\train.json)
 
 ```bat
+python preprocess.py
 python run_finetune.py
 ```
 

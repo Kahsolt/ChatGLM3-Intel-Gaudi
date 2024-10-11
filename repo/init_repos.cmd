@@ -11,9 +11,11 @@ IF NOT EXIST optimum-habana (
   POPD
 )
 
+IF NOT EXIST Model-References (
+  git clone https://github.com/HabanaAI/Model-References
+)
+
 POPD
 
 ECHO Done!
 ECHO.
-
-PAUSE
